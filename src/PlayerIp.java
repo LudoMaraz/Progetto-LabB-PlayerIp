@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -32,10 +34,17 @@ public class PlayerIp {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+            JFrame win = new JFrame();
+            win = new JFrame("Paroliere");
+            Container c = win.getContentPane();
+            GraphicManager graphicManager = new GraphicManager();
+            graphicManager.startGraphic(win, c);
+
             do {
                 try {
                     System.out.println("Sei già registrato?");
                     if (br.readLine().equalsIgnoreCase("Si")) {
+                        graphicManager.loginGraphic(win, c);
                         writer.println("login");
                         writer.flush();
                         playerInfo = login(writer, reader, br);
