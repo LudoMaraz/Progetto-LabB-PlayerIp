@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.*;
@@ -53,28 +54,17 @@ public class PlayerIp {
                             writer.flush();
                             createMatch(writer, reader, br, playerInfo);
                         }
-                    }
-                    if(isAuth){
-                        System.out.println("AUTORIZZATO");
                         System.out.println("Vuoi visualizzare la lista delle partite?");
                         if(br.readLine().equalsIgnoreCase("Si")){
                             writer.println("visualizza_lista_match");
                             writer.flush();
                             visualizzaListaMatch(reader);
                         }
-                    }
-                    if(isAuth){
-                        System.out.println("AUTORIZZATO");
                         System.out.println("Vuoi richiedere la partecipazione a una partita?");
                         if(br.readLine().equalsIgnoreCase("Si")){
                             writer.println("partecipa_match");
                             writer.flush();
-                            System.out.println("Richiedi id_partita");
-                            if(br.readLine().equalsIgnoreCase("id_partita")) {
-                                writer.println("id_partita");
-                                writer.flush();
-                                partecipaMatch(br);
-                            }
+                            partecipaMatch(br, writer, reader, playerInfo);
                         }
                     }
                 } catch (Exception e) {
@@ -192,21 +182,24 @@ public class PlayerIp {
     }
 
     private static void visualizzaListaMatch(BufferedReader reader){
-        JsonObject listaPartite = new JsonObject();
+        JsonArray listaPartite;
         try{
-            listaPartite = new Gson().fromJson(reader.readLine(), JsonObject.class);
-            System.out.println(listaPartite);
+            listaPartite = new Gson().fromJson(reader.readLine(), JsonArray.class);
+            System.out.println(listaPartite.toString());
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    private static void partecipaMatch(BufferedReader br){
+    private static void partecipaMatch(BufferedReader br, PrintWriter writer, BufferedReader reader, JsonObject playerInfo){
         JsonObject infoPartita = new JsonObject();
         try{
-            System.out.println("Inserisci id_partita");
+            System.out.println("Richiedi id_partita");
             infoPartita.addProperty("id_partita", br.readLine());
-            if(infoPartita.get("isOpenGame").getAsBoolean() == true){
+            infoPartita.addProperty("id_player", playerInfo.get("nickname").getAsString());
+            writer.println(infoPartita);
+            writer.flush();
+            if(reader.readLine().equalsIgnoreCase("ok_partecipazione_accettata")){
                 System.out.println("Sei iscritto alla partita");
             } else {
                 System.out.println("La partita che hai richiesto non c'è");
