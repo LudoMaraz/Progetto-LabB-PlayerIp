@@ -1,8 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -34,17 +32,10 @@ public class PlayerIp {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-            JFrame win = new JFrame();
-            win = new JFrame("Paroliere");
-            Container c = win.getContentPane();
-            GraphicManager graphicManager = new GraphicManager();
-            graphicManager.startGraphic(win, c);
-
             do {
                 try {
                     System.out.println("Sei già registrato?");
                     if (br.readLine().equalsIgnoreCase("Si")) {
-                        graphicManager.loginGraphic(win, c);
                         writer.println("login");
                         writer.flush();
                         playerInfo = login(writer, reader, br);
@@ -61,6 +52,24 @@ public class PlayerIp {
                             writer.println("create_match");
                             writer.flush();
                             createMatch(writer, reader, br, playerInfo);
+                        }
+                    }
+                    if(isAuth){
+                        System.out.println("AUTORIZZATO");
+                        System.out.println("Vuoi visualizzare la lista delle partite?");
+                        if(br.readLine().equalsIgnoreCase("Si")){
+                            writer.println("visualizza_lista_match");
+                            writer.flush();
+                            visualizzaListaMatch(reader);
+                        }
+                    }
+                    if(isAuth){
+                        System.out.println("AUTORIZZATO");
+                        System.out.println("Vuoi richiedere la partecipazione a una partita?");
+                        if(br.readLine().equalsIgnoreCase("Si")){
+                            writer.println("partecipa_match");
+                            writer.flush();
+                            partecipaMatch(reader);
                         }
                     }
                 } catch (Exception e) {
@@ -175,6 +184,26 @@ public class PlayerIp {
             e.printStackTrace();
         }
 
+    }
+
+    private static void visualizzaListaMatch(BufferedReader reader){
+        JsonObject listaPartite = new JsonObject();
+        try{
+            listaPartite = new Gson().fromJson(reader.readLine(), JsonObject.class);
+            System.out.println(listaPartite);
+        }catch(Exception e){
+            e.printStackTrace();
+
+        }
+    }
+
+    private static void partecipaMatch(BufferedReader reader){
+        JsonObject infoPartita = new JsonObject();
+        try{
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
 
