@@ -127,7 +127,7 @@ public class PlayerIp {
 
             System.out.println("Enter Nome:");
             playerInfo.addProperty("nome", br.readLine());
-            System.out.print("Enter Cognome:");
+            System.out.println("Enter Cognome:");
             playerInfo.addProperty("cognome", br.readLine());
             System.out.println("Enter NickName:");
             playerInfo.addProperty("nickname", br.readLine());
