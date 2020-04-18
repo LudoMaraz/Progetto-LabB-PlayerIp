@@ -6,8 +6,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
 
 public class PlayerIp {
     private static String password = "Test"; //
@@ -66,6 +64,13 @@ public class PlayerIp {
                             writer.flush();
                             partecipaMatch(br, writer, reader, playerInfo);
                         }
+                        System.out.println("Vuoi abbandonare la partita?");
+                        if(br.readLine().equalsIgnoreCase("Si")){
+                            writer.println("leave_match");
+                            writer.flush();
+                            leaveMatch(br, writer, reader, playerInfo);
+                        }
+
                     }
                 } catch (Exception e) {
                     System.out.println("Errore autenticazione");
@@ -205,6 +210,24 @@ public class PlayerIp {
                 System.out.println("La partita che hai richiesto non c'è");
             }
         } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void leaveMatch(BufferedReader br, PrintWriter writer, BufferedReader reader, JsonObject playerInfo){
+        JsonObject infoPartita = new JsonObject();
+        try{
+            System.out.println("Richiedi id_partita");
+            infoPartita.addProperty("id_partita", br.readLine());
+            infoPartita.addProperty("id_player", playerInfo.get("nickname").getAsString());
+            writer.println(infoPartita);
+            writer.flush();
+            if(reader.readLine().equalsIgnoreCase("ok_match_left")){
+                System.out.println("Hai abbandonato la partita");
+            } else {
+                System.out.println("Errore! Non hai abbandonato la partita");
+            }
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
