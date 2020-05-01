@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.CharBuffer;
 import java.time.Instant;
+import java.util.Random;
 
 public class PlayerIp {
     private static String password = "Test"; //
@@ -70,7 +72,16 @@ public class PlayerIp {
                             writer.flush();
                             leaveMatch(br, writer, reader, playerInfo);
                         }
-
+                        System.out.println("Vuoi modificare i dati del tuo profilo?");
+                        if(br.readLine().equalsIgnoreCase("Si")){
+                            writer.println("modify_data");
+                            writer.flush();
+                            modifyProfile(br, writer, reader, playerInfo);
+                        }
+                        System.out.println("Vuoi resettare la tua password?");
+                        if(br.readLine().equalsIgnoreCase("Si")){
+                            resetPsw(br, writer, reader, playerInfo);
+                        }
                     }
                 } catch (Exception e) {
                     System.out.println("Errore autenticazione");
@@ -231,6 +242,78 @@ public class PlayerIp {
             e.printStackTrace();
         }
     }
+
+    private static void modifyProfile(BufferedReader br, PrintWriter writer, BufferedReader reader, JsonObject playerInfo){
+        try{
+            String n = "";
+            System.out.println("Cosa vuoi modificare?");
+            System.out.println("Nome\nCognome\nNickname\nPassword");
+            //PrintWriter wr = new PrintWriter(System.out, true);
+            n = br.readLine();
+            switch (n){
+                case "nome":
+                    System.out.println("Inserisci il nuovo nome: ");
+                    playerInfo.addProperty("nome", br.readLine());
+                    writer.println(playerInfo);
+                    writer.flush();
+                    break;
+                case "cognome":
+                    System.out.println("Inserisci il nuovo cognome: ");
+                    playerInfo.addProperty("cognome", br.readLine());
+                    writer.println(playerInfo);
+                    writer.flush();
+                    break;
+                case "nickname":
+                    System.out.println("Inserisci il nuovo nickname: ");
+                    playerInfo.addProperty("nickname", br.readLine());
+                    writer.println(playerInfo);
+                    writer.flush();
+                    break;
+
+                case "password":
+                    System.out.println("Inserisci la vecchia psw: ");
+                    if (playerInfo.get("password").getAsString().equals(br.readLine().trim())){
+                        System.out.println("Inserisci la nuova password: ");
+                        playerInfo.addProperty("password", br.readLine());
+                        writer.println(playerInfo);
+                        writer.flush();
+                    } else {
+                        System.out.println("ERRORE! La password inserita non corrisponde");
+                    }
+                    break;
+            }
+            if(reader.readLine().equalsIgnoreCase("ok_dati_modificati")){
+                System.out.println("I dati sono stati modificati correttamente");
+            } else {
+                System.err.println("ERRORE: i dati non sono stati modificati correttamente");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void resetPsw(BufferedReader br, PrintWriter writer, BufferedReader reader, JsonObject playerInfo) {
+
+        try {
+            System.out.println("Inserisci l'email associata al tuo profilo: ");
+
+            if(playerInfo.get("email").getAsString().equals(br.readLine().trim())){
+                writer.println("reset_psw");
+                writer.flush();
+            }
+
+            if (reader.readLine().equalsIgnoreCase("ok_reset_psw_effettuato")) {
+                System.out.println("COMPLETA IL RESET ESEGUENDO IL LOGIN E INSERENDO LA PASSWORD CHE TI É STATA INVIATO ALLA TUA EMAIL");
+            } else {
+                System.out.println("Errore nel reset della password");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }
+
+
 
 
