@@ -134,6 +134,9 @@ public class PlayerManager {
 
                 writer.println("reset_psw");
                 writer.flush();
+
+                writer.println(playerInfo);
+                writer.flush();
             }
 
             if (reader.readLine().equalsIgnoreCase("ok_reset_psw_effettuato")) {
